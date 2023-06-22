@@ -5,8 +5,3 @@ venv/
 # Ignore Django migration files
 */migrations/
 
-# Ignore sensitive or local configuration files
-settings.py
-local_settings.py
-.env
-
