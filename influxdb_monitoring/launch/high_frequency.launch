@@ -1,0 +1,5 @@
+<launch>
+  <node name="pseudo_publisher_high_frequency" pkg="influxdb_monitoring" type="pseudo_publisher_high_frequency.py" output="screen"/>
+  <node name="topic_frequency_to_influxdb_high_frequency" pkg="influxdb_monitoring" type="topic_frequency_to_influxdb_high_frequency.py" output="screen"/>
+  <node name="msgs_to_influxdb_high_frequency" pkg="influxdb_monitoring" type="msgs_to_influxdb_high_frequency.py" output="screen"/>
+</launch>

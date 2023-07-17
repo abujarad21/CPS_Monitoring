@@ -1,0 +1,4 @@
+<launch>
+  <node name="pseudo_publisher" pkg="influxdb_monitoring" type="pseudo_publisher.py" output="screen"/>
+  <node name="msgs_to_influxdb_basic" pkg="influxdb_monitoring" type="msgs_to_influxdb_basic.py" output="screen"/>
+</launch>

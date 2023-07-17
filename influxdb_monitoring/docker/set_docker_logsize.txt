@@ -1,0 +1,10 @@
+paste this in /etc/docker/daemon.json
+docker needs restart to take effect
+
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+} 

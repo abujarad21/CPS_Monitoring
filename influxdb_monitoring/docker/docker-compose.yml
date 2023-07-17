@@ -1,0 +1,83 @@
+---
+version: '2.1'
+services:
+# INFLUX 2.x
+  influxdb2:
+    user: "${UID}:${GID}"
+    image: influxdb:2.5
+    container_name: influxdb2
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+      - "8090:8090"
+    environment:
+      - TZ=Europe/Vienna
+      - DOCKER_INFLUXDB_INIT_USERNAME=influx
+      - DOCKER_INFLUXDB_INIT_PASSWORD=influx_client
+      - DOCKER_INFLUXDB_INIT_ORG=myOrg
+      - DOCKER_INFLUXDB_INIT_BUCKET=webdata
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=MYTOKEN564651CAFG52AST6FS
+      - DOCKER_INFLUXDB_INIT_RETENTION=50w
+    volumes:
+      - ${DOCKER_PATH}/appdata/influxdb2/var:/var/lib/influxdb2
+      - ${DOCKER_PATH}/appdata/influxdb2/etc:/etc/influxdb2
+    restart: unless-stopped
+
+  telegraf:
+    user: "${UID}:${GID}"
+    image: telegraf:latest
+    container_name: telegraf
+    ports: 
+      - "8125:8125"
+    environment:
+      - TZ=Europe/Vienna
+      - HOST_HOSTNAME="kmr"
+      - HOST_CONTAINERNAME="telegraf"
+      - HOST_PROC=/rootfs/proc
+      - HOST_SYS=/rootfs/sys
+      - HOST_ETC=/rootfs/etc
+      - HOST_MOUNT_PREFIX'=/rootfs
+    volumes:
+      - /var/run/utmp:/var/run/utmp:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/rootfs:ro
+      - /sys:/rootfs/sys:ro
+      - /etc:/rootfs/etc:ro
+      - /proc:/rootfs/proc:ro
+      - ${DOCKER_PATH}/appdata/telegraf.conf:/etc/telegraf/telegraf.conf:rw
+      - /run/udev:/run/udev:ro
+      - /opt/vc/bin/vcgencmd:/opt/vc/bin/vcgencmd
+    depends_on:
+      - influxdb2
+    restart: unless-stopped
+    network_mode: host
+    
+  grafana:
+    user: "${UID}:${GID}"
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - TZ=Europe/Vienna
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+    links:
+      - influxdb2
+    volumes:
+      - ${DOCKER_PATH}/appdata/grafana/data:/var/lib/grafana
+    restart: unless-stopped
+
+  portainer: # pw adminadminadmin
+    user: "${UID}:${GID}"
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DOCKER_PATH}/appdata/portainer/data:/data
+    ports:
+      - 9000:9000

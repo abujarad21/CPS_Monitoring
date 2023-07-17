@@ -1,0 +1,10 @@
+Type: InfluxDB
+Name: InfluxDB (suggestion)
+Query Language: Flux
+URL: http://influxdb2:8086 (name of docker container, from docker compose)
+unclick basic auth
+Organization: myOrg (as configured in docker compose)
+Token: from docker compose
+Default Bucket: webdata (also from docker compose)
+
+Import dashboards in the Dashboards/Import tab  -> can choose InfluxDB source
